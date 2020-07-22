@@ -1,12 +1,14 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   View,
-  Image,
+  ImageBackground,
   Animated,
   PanResponder,
   Dimensions,
 } from "react-native";
+
+import { Ionicons } from "@expo/vector-icons";
 
 const DATA = [
   {
@@ -40,6 +42,8 @@ export default function App() {
   const SWIPE_VERTICAL_THRESHOLD = -SCREEN_HEIGHT * 0.1;
   const SWIPE_OUT_DURATION = 250;
 
+  let handleOpacity;
+
   const imageOrigin = {
     x:
       Dimensions.get("window").width / 2 -
@@ -56,16 +60,30 @@ export default function App() {
       pan.setOffset(imageOrigin); // defines origin
       return true;
     },
-    onPanResponderMove: Animated.event(
-      [
-        null,
-        {
-          dx: pan.x, // x,y are Animated.Value
-          dy: pan.y,
-        },
-      ],
-      { useNativeDriver: false } // <-- Add this
-    ),
+    onPanResponderMove: (event, gesture) => {
+      if (
+        gesture.dx > -SWIPE_HORIZONTAL_THRESHOLD &&
+        gesture.dx < SWIPE_HORIZONTAL_THRESHOLD
+      ) {
+        handleSwipeTopOpacity();
+        console.log("opcacity");
+        handleOpacity = true;
+        // Animated.timing(pan, { toValue: { x: 0, y: 0 } });
+      } else {
+        handleOpacity = false;
+      }
+
+      return Animated.event(
+        [
+          null,
+          {
+            dx: pan.x, // x,y are Animated.Value
+            dy: pan.y,
+          },
+        ],
+        { useNativeDriver: false } // <-- Add this
+      )(event, gesture);
+    },
     onPanResponderRelease: (event, gesture) => {
       if (gesture.dx < -SWIPE_HORIZONTAL_THRESHOLD) {
         forceSwipe("left");
@@ -113,6 +131,33 @@ export default function App() {
     }).start();
   };
 
+  const handleSwipeRigthOpacity = () => {
+    const swipeRightOpacity = pan.x.interpolate({
+      inputRange: [imageOrigin.x, SCREEN_WIDTH],
+      outputRange: [0, 1],
+    });
+
+    return swipeRightOpacity;
+  };
+
+  const handleSwipeLeftOpacity = () => {
+    const swipeLeftOpactiy = pan.x.interpolate({
+      inputRange: [-SCREEN_WIDTH, imageOrigin.x],
+      outputRange: [1, 0],
+    });
+
+    return swipeLeftOpactiy;
+  };
+
+  const handleSwipeTopOpacity = () => {
+    const swipeTopOpacity = pan.y.interpolate({
+      inputRange: [-SCREEN_WIDTH, imageOrigin.y],
+      outputRange: [1, 0],
+    });
+
+    return swipeTopOpacity;
+  };
+
   const getCardStyle = () => {
     const rotate = pan.x.interpolate({
       inputRange: [-SCREEN_WIDTH * 2, imageOrigin.x, SCREEN_WIDTH * 2],
@@ -130,7 +175,30 @@ export default function App() {
         {...panResponder.panHandlers}
         style={[styles.imageContainer, getCardStyle()]}
       >
-        <Image style={styles.image} source={{ uri: data[0].uri }} />
+        <ImageBackground style={styles.image} source={{ uri: data[0].uri }}>
+          <Animated.View
+            {...panResponder.panHandlers}
+            style={{ opacity: handleSwipeRigthOpacity(), position: "absolute" }}
+          >
+            <Ionicons name="md-heart" size={100} color="purple" />
+          </Animated.View>
+
+          <Animated.View
+            {...panResponder.panHandlers}
+            style={{ opacity: handleSwipeLeftOpacity(), position: "absolute" }}
+          >
+            <Ionicons name="md-close" size={100} color="purple" />
+          </Animated.View>
+          <Animated.View
+            {...panResponder.panHandlers}
+            style={{
+              opacity: handleSwipeTopOpacity(),
+              position: "absolute",
+            }}
+          >
+            <Ionicons name="md-star" size={100} color="purple" />
+          </Animated.View>
+        </ImageBackground>
       </Animated.View>
     </View>
   );
@@ -145,6 +213,8 @@ const styles = StyleSheet.create({
   image: {
     height: "100%",
     width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   container: {
     flex: 1,
