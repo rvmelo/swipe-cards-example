@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,7 +6,6 @@ import {
   Animated,
   PanResponder,
   Dimensions,
-  Button,
 } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -55,11 +54,12 @@ export default function App() {
 
   const pan = useRef(new Animated.ValueXY(imageOrigin)).current;
 
+  useEffect(() => {
+    pan.setOffset(imageOrigin);
+  }, []);
+
   const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => {
-      pan.setOffset(imageOrigin); // defines origin
-      return true;
-    },
+    onStartShouldSetPanResponder: () => true,
     onPanResponderMove: (event, gesture) => {
       return Animated.event(
         [
@@ -139,7 +139,7 @@ export default function App() {
 
   const handleSwipeTopOpacity = () => {
     const swipeTopOpacity = Animated.add(pan.y, pan.x).interpolate({
-      inputRange: [-SCREEN_WIDTH, 0],
+      inputRange: [-SCREEN_WIDTH / 2, imageOrigin.x],
       outputRange: [1, 0],
     });
 
