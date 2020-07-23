@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,51 +6,51 @@ import {
   Animated,
   PanResponder,
   Dimensions,
-} from "react-native";
+  Button,
+} from 'react-native';
 
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
+import ButtonPanel from './components/buttonPanel';
 
 const DATA = [
   {
     id: 1,
-    text: "Card #1",
-    uri: "http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-04.jpg",
+    text: 'Card #1',
+    uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-04.jpg',
   },
   {
     id: 2,
-    text: "Card #2",
-    uri: "http://www.fluxdigital.co/wp-content/uploads/2015/04/Unsplash.jpg",
+    text: 'Card #2',
+    uri: 'http://www.fluxdigital.co/wp-content/uploads/2015/04/Unsplash.jpg',
   },
   {
     id: 3,
-    text: "Card #3",
-    uri: "http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-09.jpg",
+    text: 'Card #3',
+    uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-09.jpg',
   },
   {
     id: 4,
-    text: "Card #4",
-    uri: "http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-01.jpg",
+    text: 'Card #4',
+    uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-01.jpg',
   },
 ];
 
 export default function App() {
   const data = useState([...DATA])[0];
 
-  const SCREEN_WIDTH = Dimensions.get("window").width;
-  const SCREEN_HEIGHT = Dimensions.get("window").height;
+  const SCREEN_WIDTH = Dimensions.get('window').width;
+  const SCREEN_HEIGHT = Dimensions.get('window').height;
   const SWIPE_HORIZONTAL_THRESHOLD = SCREEN_WIDTH * 0.3;
   const SWIPE_VERTICAL_THRESHOLD = -SCREEN_HEIGHT * 0.1;
   const SWIPE_OUT_DURATION = 250;
 
-  let handleOpacity;
-
   const imageOrigin = {
     x:
-      Dimensions.get("window").width / 2 -
-      (Dimensions.get("window").width * 0.9) / 2,
+      Dimensions.get('window').width / 2 -
+      (Dimensions.get('window').width * 0.9) / 2,
     y:
-      Dimensions.get("window").height / 2 -
-      (Dimensions.get("window").height * 0.6) / 2,
+      Dimensions.get('window').height / 2 -
+      (Dimensions.get('window').height * 0.6) / 2,
   };
 
   const pan = useRef(new Animated.ValueXY(imageOrigin)).current;
@@ -61,18 +61,6 @@ export default function App() {
       return true;
     },
     onPanResponderMove: (event, gesture) => {
-      if (
-        gesture.dx > -SWIPE_HORIZONTAL_THRESHOLD &&
-        gesture.dx < SWIPE_HORIZONTAL_THRESHOLD
-      ) {
-        handleSwipeTopOpacity();
-        console.log("opcacity");
-        handleOpacity = true;
-        // Animated.timing(pan, { toValue: { x: 0, y: 0 } });
-      } else {
-        handleOpacity = false;
-      }
-
       return Animated.event(
         [
           null,
@@ -86,11 +74,11 @@ export default function App() {
     },
     onPanResponderRelease: (event, gesture) => {
       if (gesture.dx < -SWIPE_HORIZONTAL_THRESHOLD) {
-        forceSwipe("left");
+        forceSwipe('left');
       } else if (gesture.dx > SWIPE_HORIZONTAL_THRESHOLD) {
-        forceSwipe("right");
+        forceSwipe('right');
       } else if (gesture.dy < SWIPE_VERTICAL_THRESHOLD) {
-        forceSwipe("top");
+        forceSwipe('top');
       } else {
         resetPosition();
       }
@@ -100,11 +88,11 @@ export default function App() {
   const forceSwipe = (direction) => {
     let swipeDirection;
 
-    if (direction === "top") {
+    if (direction === 'top') {
       swipeDirection = { x: 0, y: -SCREEN_HEIGHT * 2 };
     } else {
       swipeDirection =
-        direction === "right"
+        direction === 'right'
           ? {
               x: SCREEN_HEIGHT,
               y: -SCREEN_HEIGHT,
@@ -150,8 +138,8 @@ export default function App() {
   };
 
   const handleSwipeTopOpacity = () => {
-    const swipeTopOpacity = pan.y.interpolate({
-      inputRange: [-SCREEN_WIDTH, imageOrigin.y],
+    const swipeTopOpacity = Animated.add(pan.y, pan.x).interpolate({
+      inputRange: [-SCREEN_WIDTH, 0],
       outputRange: [1, 0],
     });
 
@@ -161,7 +149,7 @@ export default function App() {
   const getCardStyle = () => {
     const rotate = pan.x.interpolate({
       inputRange: [-SCREEN_WIDTH * 2, imageOrigin.x, SCREEN_WIDTH * 2],
-      outputRange: ["-120deg", "0deg", "120deg"],
+      outputRange: ['-120deg', '0deg', '120deg'],
     });
     return {
       ...pan.getLayout(),
@@ -178,14 +166,14 @@ export default function App() {
         <ImageBackground style={styles.image} source={{ uri: data[0].uri }}>
           <Animated.View
             {...panResponder.panHandlers}
-            style={{ opacity: handleSwipeRigthOpacity(), position: "absolute" }}
+            style={{ opacity: handleSwipeRigthOpacity(), position: 'absolute' }}
           >
             <Ionicons name="md-heart" size={100} color="purple" />
           </Animated.View>
 
           <Animated.View
             {...panResponder.panHandlers}
-            style={{ opacity: handleSwipeLeftOpacity(), position: "absolute" }}
+            style={{ opacity: handleSwipeLeftOpacity(), position: 'absolute' }}
           >
             <Ionicons name="md-close" size={100} color="purple" />
           </Animated.View>
@@ -193,33 +181,34 @@ export default function App() {
             {...panResponder.panHandlers}
             style={{
               opacity: handleSwipeTopOpacity(),
-              position: "absolute",
+              position: 'absolute',
             }}
           >
             <Ionicons name="md-star" size={100} color="purple" />
           </Animated.View>
         </ImageBackground>
       </Animated.View>
+      <ButtonPanel forceSwipe={forceSwipe} resetPosition={resetPosition} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   imageContainer: {
-    height: "60%",
-    width: "90%",
-    position: "absolute",
+    height: '60%',
+    width: '90%',
+    position: 'absolute',
   },
   image: {
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
 });
