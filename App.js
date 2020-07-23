@@ -1,15 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   StyleSheet,
   View,
-  ImageBackground,
   Animated,
   PanResponder,
   Dimensions,
 } from 'react-native';
 
-import { Ionicons } from '@expo/vector-icons';
 import ButtonPanel from './components/buttonPanel';
+
+import Card from './components/card/card';
 
 const DATA = [
   {
@@ -35,12 +35,10 @@ const DATA = [
 ];
 
 export default function App() {
-  const data = useState([...DATA])[0];
-
   const SCREEN_WIDTH = Dimensions.get('window').width;
   const SCREEN_HEIGHT = Dimensions.get('window').height;
   const SWIPE_HORIZONTAL_THRESHOLD = SCREEN_WIDTH * 0.3;
-  const SWIPE_VERTICAL_THRESHOLD = -SCREEN_HEIGHT * 0.1;
+  const SWIPE_VERTICAL_THRESHOLD = -SCREEN_HEIGHT * 0.3;
   const SWIPE_OUT_DURATION = 250;
 
   const imageOrigin = {
@@ -119,82 +117,21 @@ export default function App() {
     }).start();
   };
 
-  const handleSwipeRigthOpacity = () => {
-    const swipeRightOpacity = pan.x.interpolate({
-      inputRange: [imageOrigin.x, SCREEN_WIDTH],
-      outputRange: [0, 1],
-    });
-
-    return swipeRightOpacity;
-  };
-
-  const handleSwipeLeftOpacity = () => {
-    const swipeLeftOpactiy = pan.x.interpolate({
-      inputRange: [-SCREEN_WIDTH, imageOrigin.x],
-      outputRange: [1, 0],
-    });
-
-    return swipeLeftOpactiy;
-  };
-
-  const handleSwipeTopOpacity = () => {
-    const swipeTopOpacity = Animated.add(pan.y, pan.x).interpolate({
-      inputRange: [-SCREEN_WIDTH / 2, imageOrigin.x],
-      outputRange: [1, 0],
-    });
-
-    return swipeTopOpacity;
-  };
-
-  const getCardStyle = () => {
-    const rotate = pan.x.interpolate({
-      inputRange: [-SCREEN_WIDTH * 2, imageOrigin.x, SCREEN_WIDTH * 2],
-      outputRange: ['-120deg', '0deg', '120deg'],
-    });
-    return {
-      ...pan.getLayout(),
-      transform: [{ rotate }],
-    };
-  };
-
   return (
     <View style={styles.container}>
-      <Animated.View
-        {...panResponder.panHandlers}
-        style={[styles.imageContainer, getCardStyle()]}
-      >
-        <ImageBackground style={styles.image} source={{ uri: data[0].uri }}>
-          <Animated.View
-            {...panResponder.panHandlers}
-            style={{ opacity: handleSwipeRigthOpacity(), position: 'absolute' }}
-          >
-            <Ionicons name="md-heart" size={100} color="purple" />
-          </Animated.View>
-
-          <Animated.View
-            {...panResponder.panHandlers}
-            style={{ opacity: handleSwipeLeftOpacity(), position: 'absolute' }}
-          >
-            <Ionicons name="md-close" size={100} color="purple" />
-          </Animated.View>
-          <Animated.View
-            {...panResponder.panHandlers}
-            style={{
-              opacity: handleSwipeTopOpacity(),
-              position: 'absolute',
-            }}
-          >
-            <Ionicons name="md-star" size={100} color="purple" />
-          </Animated.View>
-        </ImageBackground>
-      </Animated.View>
+      <Card
+        cardStyle={styles.cardContainer}
+        data={DATA[0]}
+        panResponder={panResponder}
+        pan={pan}
+      />
       <ButtonPanel forceSwipe={forceSwipe} resetPosition={resetPosition} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  imageContainer: {
+  cardContainer: {
     height: '60%',
     width: '90%',
     position: 'absolute',
