@@ -7,10 +7,11 @@ const Card = ({
   cardStyle,
   data,
   panResponder,
-  pan,
+  cardPosition,
   likeOpacity,
   dislikeOpacity,
   superlikeOpacity,
+  isTopCard,
 }) => {
   const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -24,30 +25,45 @@ const Card = ({
   };
 
   const getCardStyle = () => {
-    const rotate = pan.x.interpolate({
+    const rotate = cardPosition.x.interpolate({
       inputRange: [-SCREEN_WIDTH * 2, imageOrigin.x, SCREEN_WIDTH * 2],
       outputRange: ['-120deg', '0deg', '120deg'],
     });
     return {
-      ...pan.getLayout(),
+      ...cardPosition.getLayout(),
       transform: [{ rotate }],
     };
   };
 
   return (
-    <Animated.View
-      {...panResponder.panHandlers}
-      style={[{ ...cardStyle }, getCardStyle()]}
-    >
-      <CardBackground
-        likeOpacity={likeOpacity}
-        dislikeOpacity={dislikeOpacity}
-        superlikeOpacity={superlikeOpacity}
-        imageOrigin={imageOrigin}
-        pan={pan}
-        data={data}
-      />
-    </Animated.View>
+    <>
+      {isTopCard ? (
+        <Animated.View
+          {...panResponder.panHandlers}
+          style={[{ ...cardStyle }, getCardStyle()]}
+        >
+          <CardBackground
+            likeOpacity={likeOpacity}
+            dislikeOpacity={dislikeOpacity}
+            superlikeOpacity={superlikeOpacity}
+            imageOrigin={imageOrigin}
+            cardPosition={cardPosition}
+            data={data}
+          />
+        </Animated.View>
+      ) : (
+        <Animated.View style={[{ ...cardStyle }]}>
+          <CardBackground
+            likeOpacity={likeOpacity}
+            dislikeOpacity={dislikeOpacity}
+            superlikeOpacity={superlikeOpacity}
+            imageOrigin={imageOrigin}
+            cardPosition={cardPosition}
+            data={data}
+          />
+        </Animated.View>
+      )}
+    </>
   );
 };
 

@@ -11,14 +11,14 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const CardBackground = ({
   imageOrigin,
-  pan,
+  cardPosition,
   data,
   likeOpacity,
   dislikeOpacity,
   superlikeOpacity,
 }) => {
   const handleSwipeRigthOpacity = () => {
-    const swipeRightOpacity = pan.x.interpolate({
+    const swipeRightOpacity = cardPosition.x.interpolate({
       inputRange: [imageOrigin.x, SCREEN_WIDTH],
       outputRange: [0, 1],
     });
@@ -27,7 +27,7 @@ const CardBackground = ({
   };
 
   const handleSwipeLeftOpacity = () => {
-    const swipeLeftOpactiy = pan.x.interpolate({
+    const swipeLeftOpactiy = cardPosition.x.interpolate({
       inputRange: [-SCREEN_WIDTH, imageOrigin.x],
       outputRange: [1, 0],
     });
@@ -36,7 +36,10 @@ const CardBackground = ({
   };
 
   const handleSwipeTopOpacity = () => {
-    const swipeTopOpacity = Animated.add(pan.y, pan.x).interpolate({
+    const swipeTopOpacity = Animated.add(
+      cardPosition.y,
+      cardPosition.x
+    ).interpolate({
       inputRange: [-SCREEN_WIDTH / 2, imageOrigin.x],
       outputRange: [1, 0],
     });

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -10,6 +10,21 @@ import {
 import ButtonPanel from './components/buttonPanel';
 
 import Card from './components/card/card';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+const SWIPE_HORIZONTAL_THRESHOLD = SCREEN_WIDTH * 0.3;
+const SWIPE_VERTICAL_THRESHOLD = -SCREEN_HEIGHT * 0.3;
+const SWIPE_OUT_DURATION = 250;
+
+const imageOrigin = {
+  x:
+    Dimensions.get('window').width / 2 -
+    (Dimensions.get('window').width * 0.9) / 2,
+  y:
+    Dimensions.get('window').height / 2 -
+    (Dimensions.get('window').height * 0.6) / 2,
+};
 
 const DATA = [
   {
@@ -35,30 +50,15 @@ const DATA = [
 ];
 
 export default function App() {
-  const SCREEN_WIDTH = Dimensions.get('window').width;
-  const SCREEN_HEIGHT = Dimensions.get('window').height;
-  const SWIPE_HORIZONTAL_THRESHOLD = SCREEN_WIDTH * 0.3;
-  const SWIPE_VERTICAL_THRESHOLD = -SCREEN_HEIGHT * 0.3;
-  const SWIPE_OUT_DURATION = 250;
-
-  const imageOrigin = {
-    x:
-      Dimensions.get('window').width / 2 -
-      (Dimensions.get('window').width * 0.9) / 2,
-    y:
-      Dimensions.get('window').height / 2 -
-      (Dimensions.get('window').height * 0.6) / 2,
-  };
-
   const likeAnimValue = useRef(new Animated.Value(0)).current;
   const dislikeAnimValue = useRef(new Animated.Value(0)).current;
   const superlikeAnimValue = useRef(new Animated.Value(0)).current;
 
-  const pan = useRef(new Animated.ValueXY(imageOrigin)).current;
+  const cardPosition = useRef(new Animated.ValueXY(imageOrigin)).current;
 
-  useEffect(() => {
-    pan.setOffset(imageOrigin);
-  }, []);
+  const [cardIndex, setCardIndex] = useState(0);
+
+  useEffect(() => cardPosition.setOffset(imageOrigin), []);
 
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -67,8 +67,8 @@ export default function App() {
         [
           null,
           {
-            dx: pan.x, // x,y are Animated.Value
-            dy: pan.y,
+            dx: cardPosition.x, // x,y are Animated.Value
+            dy: cardPosition.y,
           },
         ],
         { useNativeDriver: false } // <-- Add this
@@ -88,7 +88,7 @@ export default function App() {
   });
 
   const swipeAnimation = (swipeDirection) =>
-    Animated.timing(pan, {
+    Animated.timing(cardPosition, {
       toValue: swipeDirection,
       duration: SWIPE_OUT_DURATION,
       useNativeDriver: false,
@@ -99,6 +99,15 @@ export default function App() {
     return Animated.timing(icon, {
       toValue: 0.5,
       duration: 100,
+      useNativeDriver: true,
+    });
+  };
+
+  const fadeOutAnimation = (icon) => {
+    // Will change fadeAnim value to 0 in 0.1 seconds
+    return Animated.timing(icon, {
+      toValue: 0,
+      duration: 1,
       useNativeDriver: true,
     });
   };
@@ -126,7 +135,16 @@ export default function App() {
       fadeInAnimation(icon),
       Animated.delay(100),
       swipeAnimation(swipeDirection),
-    ]).start();
+    ]).start(() => {
+      // after the animation finishes
+
+      likeAnimValue.setValue(0);
+      dislikeAnimValue.setValue(0);
+      superlikeAnimValue.setValue(0);
+
+      cardPosition.setValue({ x: 0, y: 0 });
+      setCardIndex((prev) => prev + 1);
+    });
   };
 
   // When user moves card with touch
@@ -148,13 +166,19 @@ export default function App() {
             };
     }
 
-    swipeAnimation(swipeDirection).start(onSwipeComplete());
+    swipeAnimation(swipeDirection).start(() => {
+      cardPosition.setValue({ x: 0, y: 0 });
+      setCardIndex((prev) => prev + 1);
+
+      // set icon animation opcacity values
+      likeAnimValue.setValue(0);
+      dislikeAnimValue.setValue(0);
+      superlikeAnimValue.setValue(0);
+    });
   };
 
-  const onSwipeComplete = () => {};
-
   const resetPosition = () => {
-    Animated.spring(pan, {
+    Animated.spring(cardPosition, {
       toValue: { x: 0, y: 0 },
       useNativeDriver: false,
     }).start();
@@ -166,15 +190,24 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Card
-        likeOpacity={likeAnimValue}
-        dislikeOpacity={dislikeAnimValue}
-        superlikeOpacity={superlikeAnimValue}
-        cardStyle={styles.cardContainer}
-        data={DATA[0]}
-        panResponder={panResponder}
-        pan={pan}
-      />
+      {DATA.map((data, index) => {
+        return index < cardIndex ? null : (
+          <Card
+            key={data.uri}
+            likeOpacity={cardIndex === index ? likeAnimValue : 0}
+            dislikeOpacity={cardIndex === index ? dislikeAnimValue : 0}
+            superlikeOpacity={cardIndex === index ? superlikeAnimValue : 0}
+            cardStyle={{
+              ...styles.cardContainer,
+              zIndex: DATA.length - index,
+            }}
+            data={data}
+            panResponder={panResponder}
+            cardPosition={cardPosition}
+            isTopCard={cardIndex === index}
+          />
+        );
+      }).reverse()}
       <ButtonPanel
         swipeRight={() => handlePressSwipe('right', likeAnimValue)}
         swipeLeft={() => handlePressSwipe('left', dislikeAnimValue)}
@@ -190,6 +223,8 @@ const styles = StyleSheet.create({
     height: '60%',
     width: '90%',
     position: 'absolute',
+    left: imageOrigin.x, // left and top place the non animated cards in the same place as the animated ones
+    top: imageOrigin.y,
   },
   image: {
     height: '100%',
