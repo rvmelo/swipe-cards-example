@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Button, StyleSheet } from 'react-native';
 
-const ButtonPanel = ({ forceSwipe, resetPosition }) => {
+const ButtonPanel = ({ swipeRight, swipeLeft, swipeTop, resetPosition }) => {
   return (
     <View style={styles.buttonContainer}>
-      <Button title="swipe left" onPress={() => forceSwipe('left')} />
-      <Button title="swipe top" onPress={() => forceSwipe('top')} />
-      <Button title="swipe right" onPress={() => forceSwipe('right')} />
+      <Button title="swipe left" onPress={swipeLeft} />
+      <Button title="swipe top" onPress={swipeTop} />
+      <Button title="swipe right" onPress={swipeRight} />
       <View style={{ marginTop: 10 }}>
         <Button title="reset position" onPress={resetPosition} />
       </View>

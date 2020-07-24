@@ -3,7 +3,15 @@ import { Animated, Dimensions } from 'react-native';
 
 import CardBackground from './cardBackground';
 
-const Card = ({ cardStyle, data, panResponder, pan }) => {
+const Card = ({
+  cardStyle,
+  data,
+  panResponder,
+  pan,
+  likeOpacity,
+  dislikeOpacity,
+  superlikeOpacity,
+}) => {
   const SCREEN_WIDTH = Dimensions.get('window').width;
 
   const imageOrigin = {
@@ -31,7 +39,14 @@ const Card = ({ cardStyle, data, panResponder, pan }) => {
       {...panResponder.panHandlers}
       style={[{ ...cardStyle }, getCardStyle()]}
     >
-      <CardBackground imageOrigin={imageOrigin} pan={pan} data={data} />
+      <CardBackground
+        likeOpacity={likeOpacity}
+        dislikeOpacity={dislikeOpacity}
+        superlikeOpacity={superlikeOpacity}
+        imageOrigin={imageOrigin}
+        pan={pan}
+        data={data}
+      />
     </Animated.View>
   );
 };
