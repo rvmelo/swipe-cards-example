@@ -94,54 +94,6 @@ export default function App() {
       useNativeDriver: false,
     });
 
-  const iconFadeInAnimation = (icon) => {
-    // Will change icon fade in animation value to 1 in 0.1 seconds
-    return Animated.timing(icon, {
-      toValue: 0.5,
-      duration: 100,
-      useNativeDriver: true,
-    });
-  };
-
-  // When user moves card with the press of a button
-  const handlePressSwipe = (direction, icon) => {
-    let swipeDirection;
-
-    if (direction === 'top') {
-      swipeDirection = { x: 0, y: -SCREEN_HEIGHT * 2 };
-    } else {
-      swipeDirection =
-        direction === 'right'
-          ? {
-              x: SCREEN_HEIGHT,
-              y: -SCREEN_HEIGHT,
-            }
-          : {
-              x: -SCREEN_HEIGHT,
-              y: -SCREEN_HEIGHT,
-            };
-    }
-
-    // !isPressSwipe && setIsPressSwipe(true);
-
-    Animated.sequence([
-      iconFadeInAnimation(icon),
-      Animated.delay(100),
-      swipeAnimation(swipeDirection),
-    ]).start(() => {
-      // after the animation finishes
-
-      // setIsPressSwipe(false);
-
-      likeAnimValue.setValue(0);
-      dislikeAnimValue.setValue(0);
-      superlikeAnimValue.setValue(0);
-
-      cardPosition.setValue({ x: 0, y: 0 });
-      setCardIndex((prev) => prev + 1);
-    });
-  };
-
   // When user moves card with touch
   const handleForceSwipe = (direction) => {
     let swipeDirection;
@@ -164,11 +116,6 @@ export default function App() {
     swipeAnimation(swipeDirection).start(() => {
       cardPosition.setValue({ x: 0, y: 0 });
       setCardIndex((prev) => prev + 1);
-
-      // set icon animation opcacity values
-      likeAnimValue.setValue(0);
-      dislikeAnimValue.setValue(0);
-      superlikeAnimValue.setValue(0);
     });
   };
 
@@ -177,10 +124,6 @@ export default function App() {
       toValue: { x: 0, y: 0 },
       useNativeDriver: false,
     }).start();
-
-    likeAnimValue.setValue(0);
-    dislikeAnimValue.setValue(0);
-    superlikeAnimValue.setValue(0);
   };
 
   return (
@@ -189,9 +132,9 @@ export default function App() {
         return index < cardIndex ? null : (
           <Card
             key={data.uri}
-            likeOpacity={cardIndex === index ? likeAnimValue : 0}
-            dislikeOpacity={cardIndex === index ? dislikeAnimValue : 0}
-            superlikeOpacity={cardIndex === index ? superlikeAnimValue : 0}
+            likeOpacity={likeAnimValue}
+            dislikeOpacity={dislikeAnimValue}
+            superlikeOpacity={superlikeAnimValue}
             cardStyle={{
               ...styles.cardContainer,
               zIndex: DATA.length - index,
@@ -204,10 +147,12 @@ export default function App() {
         );
       }).reverse()}
       <ButtonPanel
-        swipeRight={() => handlePressSwipe('right', likeAnimValue)}
-        swipeLeft={() => handlePressSwipe('left', dislikeAnimValue)}
-        swipeTop={() => handlePressSwipe('top', superlikeAnimValue)}
-        resetPosition={resetPosition}
+        likeOpacity={likeAnimValue}
+        dislikeOpacity={dislikeAnimValue}
+        superlikeOpacity={superlikeAnimValue}
+        cardPosition={cardPosition}
+        setCardIndex={setCardIndex}
+        swipeAnimation={swipeAnimation}
       />
     </View>
   );
