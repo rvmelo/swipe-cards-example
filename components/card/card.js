@@ -49,6 +49,7 @@ const Card = ({
             imageOrigin={imageOrigin}
             cardPosition={cardPosition}
             data={data}
+            isTopCard={isTopCard}
           />
         </Animated.View>
       ) : (
@@ -60,6 +61,7 @@ const Card = ({
             imageOrigin={imageOrigin}
             cardPosition={cardPosition}
             data={data}
+            isTopCard={isTopCard}
           />
         </Animated.View>
       )}

@@ -16,6 +16,7 @@ const CardBackground = ({
   likeOpacity,
   dislikeOpacity,
   superlikeOpacity,
+  isTopCard,
 }) => {
   const handleSwipeRigthOpacity = () => {
     const swipeRightOpacity = cardPosition.x.interpolate({
@@ -52,24 +53,37 @@ const CardBackground = ({
       {/* LIKE ICONS */}
 
       <Animated.View
-        style={{ opacity: handleSwipeRigthOpacity(), position: 'absolute' }}
+        style={{
+          opacity: isTopCard ? handleSwipeRigthOpacity() : 0,
+          position: 'absolute',
+        }}
       >
         <Ionicons name="md-heart" size={100} color="purple" />
       </Animated.View>
 
-      <Animated.View style={{ opacity: likeOpacity, position: 'absolute' }}>
+      <Animated.View
+        style={{ opacity: isTopCard ? likeOpacity : 0, position: 'absolute' }}
+      >
         <Ionicons name="md-heart" size={100} color="purple" />
       </Animated.View>
 
       {/* DISLIKE ICONS */}
 
       <Animated.View
-        style={{ opacity: handleSwipeLeftOpacity(), position: 'absolute' }}
+        style={{
+          opacity: isTopCard ? handleSwipeLeftOpacity() : 0,
+          position: 'absolute',
+        }}
       >
         <Ionicons name="md-close" size={100} color="purple" />
       </Animated.View>
 
-      <Animated.View style={{ opacity: dislikeOpacity, position: 'absolute' }}>
+      <Animated.View
+        style={{
+          opacity: isTopCard ? dislikeOpacity : 0,
+          position: 'absolute',
+        }}
+      >
         <Ionicons name="md-close" size={100} color="purple" />
       </Animated.View>
 
@@ -77,7 +91,7 @@ const CardBackground = ({
 
       <Animated.View
         style={{
-          opacity: handleSwipeTopOpacity(),
+          opacity: isTopCard ? handleSwipeTopOpacity() : 0,
           position: 'absolute',
         }}
       >
@@ -86,7 +100,7 @@ const CardBackground = ({
 
       <Animated.View
         style={{
-          opacity: superlikeOpacity,
+          opacity: isTopCard ? superlikeOpacity : 0,
           position: 'absolute',
         }}
       >

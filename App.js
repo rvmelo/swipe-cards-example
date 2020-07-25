@@ -94,20 +94,11 @@ export default function App() {
       useNativeDriver: false,
     });
 
-  const fadeInAnimation = (icon) => {
-    // Will change fadeAnim value to 1 in 0.1 seconds
+  const iconFadeInAnimation = (icon) => {
+    // Will change icon fade in animation value to 1 in 0.1 seconds
     return Animated.timing(icon, {
       toValue: 0.5,
       duration: 100,
-      useNativeDriver: true,
-    });
-  };
-
-  const fadeOutAnimation = (icon) => {
-    // Will change fadeAnim value to 0 in 0.1 seconds
-    return Animated.timing(icon, {
-      toValue: 0,
-      duration: 1,
       useNativeDriver: true,
     });
   };
@@ -131,12 +122,16 @@ export default function App() {
             };
     }
 
+    // !isPressSwipe && setIsPressSwipe(true);
+
     Animated.sequence([
-      fadeInAnimation(icon),
+      iconFadeInAnimation(icon),
       Animated.delay(100),
       swipeAnimation(swipeDirection),
     ]).start(() => {
       // after the animation finishes
+
+      // setIsPressSwipe(false);
 
       likeAnimValue.setValue(0);
       dislikeAnimValue.setValue(0);
