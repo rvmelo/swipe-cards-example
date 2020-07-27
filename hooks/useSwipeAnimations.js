@@ -16,10 +16,6 @@ function useSwipeAnimations() {
 
   const [cardPointer, setCardPointer] = useState(0);
 
-  const likeAnimValue = useRef(new Animated.Value(0)).current;
-  const dislikeAnimValue = useRef(new Animated.Value(0)).current;
-  const superlikeAnimValue = useRef(new Animated.Value(0)).current;
-
   const currentCard = useRef(new Animated.ValueXY(imageOrigin)).current;
   const previousCard = useRef(
     new Animated.ValueXY({ x: -SCREEN_HEIGHT, y: -SCREEN_HEIGHT })
@@ -67,9 +63,6 @@ function useSwipeAnimations() {
   return {
     cardPointer,
     setCardPointer,
-    likeAnimValue,
-    dislikeAnimValue,
-    superlikeAnimValue,
     currentCard,
     previousCard,
     handleForceSwipe,

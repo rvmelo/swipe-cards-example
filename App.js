@@ -14,6 +14,7 @@ import Card from './components/card/card';
 //  hooks
 import useSwipeAnimations from './hooks/useSwipeAnimations';
 import usePressAnimations from './hooks/usePressAnimations';
+import useOpacityAnimations from './hooks/useOpacityAnimations';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -54,11 +55,15 @@ const DATA = [
 
 export default function App() {
   const {
-    cardPointer,
-    setCardPointer,
     likeAnimValue,
     dislikeAnimValue,
     superlikeAnimValue,
+    iconFadeInAnimation,
+  } = useOpacityAnimations();
+
+  const {
+    cardPointer,
+    setCardPointer,
     currentCard,
     previousCard,
     handleForceSwipe,
@@ -68,6 +73,7 @@ export default function App() {
 
   const { handlePressSwipe, handleSwipeBack } = usePressAnimations(
     swipeAnimation,
+    iconFadeInAnimation,
     currentCard,
     previousCard,
     cardPointer,

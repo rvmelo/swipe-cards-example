@@ -4,6 +4,7 @@ import { Dimensions, Animated } from 'react-native';
 //  Animations triggered by the press of a button
 function usePressAnimations(
   swipeAnimation,
+  iconFadeInAnimation,
   currentCard,
   previousCard,
   cardPointer,
@@ -12,15 +13,6 @@ function usePressAnimations(
   const SCREEN_HEIGHT = Dimensions.get('window').height;
 
   const [playResetAnimation, setPlayResetAnimation] = useState(false);
-
-  const iconFadeInAnimation = (iconOpacity) => {
-    // Will change icon opacity value to 1 in 0.1 seconds
-    return Animated.timing(iconOpacity, {
-      toValue: 0.5,
-      duration: 100,
-      useNativeDriver: false,
-    });
-  };
 
   // When user moves card with the press of a button
   const handlePressSwipe = (direction, iconOpacity) => {
