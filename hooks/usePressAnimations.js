@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Dimensions, Animated } from 'react-native';
 
+//  Animations triggered by the press of a button
 function usePressAnimations(
   swipeAnimation,
   currentCard,
@@ -55,7 +56,7 @@ function usePressAnimations(
       });
   };
 
-  const resetPosition = () => {
+  const handleSwipeBack = () => {
     if (cardPointer > 0) {
       setPlayResetAnimation(true);
 
@@ -72,7 +73,7 @@ function usePressAnimations(
     }
   };
 
-  return { handlePressSwipe, resetPosition };
+  return { handlePressSwipe, handleSwipeBack };
 }
 
 export default usePressAnimations;

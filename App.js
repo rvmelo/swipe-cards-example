@@ -13,6 +13,7 @@ import Card from './components/card/card';
 
 //  hooks
 import useSwipeAnimations from './hooks/useSwipeAnimations';
+import usePressAnimations from './hooks/usePressAnimations';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -64,6 +65,14 @@ export default function App() {
     resetPosition,
     swipeAnimation,
   } = useSwipeAnimations();
+
+  const { handlePressSwipe, handleSwipeBack } = usePressAnimations(
+    swipeAnimation,
+    currentCard,
+    previousCard,
+    cardPointer,
+    setCardPointer
+  );
 
   useEffect(() => {
     currentCard.setOffset(imageOrigin);
@@ -121,14 +130,10 @@ export default function App() {
         );
       }).reverse()}
       <ButtonPanel
-        likeOpacity={likeAnimValue}
-        dislikeOpacity={dislikeAnimValue}
-        superlikeOpacity={superlikeAnimValue}
-        swipeAnimation={swipeAnimation}
-        currentCard={currentCard}
-        previousCard={previousCard}
-        cardPointer={cardPointer}
-        setCardPointer={setCardPointer}
+        onRightSwipe={() => handlePressSwipe('right', likeAnimValue)}
+        onLeftSwipe={() => handlePressSwipe('left', dislikeAnimValue)}
+        onTopSwipe={() => handlePressSwipe('top', superlikeAnimValue)}
+        onBackSwipe={handleSwipeBack}
       />
     </View>
   );
