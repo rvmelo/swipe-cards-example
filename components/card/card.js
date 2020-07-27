@@ -12,6 +12,7 @@ const Card = ({
   dislikeOpacity,
   superlikeOpacity,
   isTopCard,
+  isPreviousCard,
 }) => {
   const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -37,34 +38,24 @@ const Card = ({
 
   return (
     <>
-      {isTopCard ? (
-        <Animated.View
-          {...panResponder.panHandlers}
-          style={[{ ...cardStyle }, getCardStyle()]}
-        >
-          <CardBackground
-            likeOpacity={likeOpacity}
-            dislikeOpacity={dislikeOpacity}
-            superlikeOpacity={superlikeOpacity}
-            imageOrigin={imageOrigin}
-            cardPosition={cardPosition}
-            data={data}
-            isTopCard={isTopCard}
-          />
-        </Animated.View>
-      ) : (
-        <Animated.View style={[{ ...cardStyle }]}>
-          <CardBackground
-            likeOpacity={likeOpacity}
-            dislikeOpacity={dislikeOpacity}
-            superlikeOpacity={superlikeOpacity}
-            imageOrigin={imageOrigin}
-            cardPosition={cardPosition}
-            data={data}
-            isTopCard={isTopCard}
-          />
-        </Animated.View>
-      )}
+      <Animated.View
+        {...panResponder.panHandlers}
+        style={
+          isTopCard || isPreviousCard
+            ? [{ ...cardStyle }, getCardStyle()]
+            : [{ ...cardStyle }]
+        }
+      >
+        <CardBackground
+          likeOpacity={likeOpacity}
+          dislikeOpacity={dislikeOpacity}
+          superlikeOpacity={superlikeOpacity}
+          imageOrigin={imageOrigin}
+          cardPosition={cardPosition}
+          data={data}
+          isTopCard={isTopCard}
+        />
+      </Animated.View>
     </>
   );
 };

@@ -54,11 +54,17 @@ export default function App() {
   const dislikeAnimValue = useRef(new Animated.Value(0)).current;
   const superlikeAnimValue = useRef(new Animated.Value(0)).current;
 
-  const cardPosition = useRef(new Animated.ValueXY(imageOrigin)).current;
+  const currentCard = useRef(new Animated.ValueXY(imageOrigin)).current;
+  const previousCard = useRef(
+    new Animated.ValueXY({ x: -SCREEN_HEIGHT, y: -SCREEN_HEIGHT })
+  ).current;
 
-  const [cardIndex, setCardIndex] = useState(0);
+  const [cardPointer, setCardPointer] = useState(0);
 
-  useEffect(() => cardPosition.setOffset(imageOrigin), []);
+  useEffect(() => {
+    currentCard.setOffset(imageOrigin);
+    previousCard.setOffset(imageOrigin);
+  }, []);
 
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -67,8 +73,8 @@ export default function App() {
         [
           null,
           {
-            dx: cardPosition.x, // x,y are Animated.Value
-            dy: cardPosition.y,
+            dx: currentCard.x, // x,y are Animated.Value
+            dy: currentCard.y,
           },
         ],
         { useNativeDriver: false } // <-- Add this
@@ -88,7 +94,7 @@ export default function App() {
   });
 
   const swipeAnimation = (swipeDirection) =>
-    Animated.timing(cardPosition, {
+    Animated.timing(currentCard, {
       toValue: swipeDirection,
       duration: SWIPE_OUT_DURATION,
       useNativeDriver: false,
@@ -114,13 +120,13 @@ export default function App() {
     }
 
     swipeAnimation(swipeDirection).start(() => {
-      cardPosition.setValue({ x: 0, y: 0 });
-      setCardIndex((prev) => prev + 1);
+      currentCard.setValue({ x: 0, y: 0 });
+      setCardPointer((prev) => prev + 1);
     });
   };
 
   const resetPosition = () => {
-    Animated.spring(cardPosition, {
+    Animated.spring(currentCard, {
       toValue: { x: 0, y: 0 },
       useNativeDriver: false,
     }).start();
@@ -129,7 +135,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       {DATA.map((data, index) => {
-        return index < cardIndex ? null : (
+        return index < cardPointer - 1 ? null : (
           <Card
             key={data.uri}
             likeOpacity={likeAnimValue}
@@ -141,8 +147,11 @@ export default function App() {
             }}
             data={data}
             panResponder={panResponder}
-            cardPosition={cardPosition}
-            isTopCard={cardIndex === index}
+            cardPosition={
+              index === cardPointer - 1 ? previousCard : currentCard
+            }
+            isTopCard={cardPointer === index}
+            isPreviousCard={index === cardPointer - 1}
           />
         );
       }).reverse()}
@@ -150,9 +159,11 @@ export default function App() {
         likeOpacity={likeAnimValue}
         dislikeOpacity={dislikeAnimValue}
         superlikeOpacity={superlikeAnimValue}
-        cardPosition={cardPosition}
-        setCardIndex={setCardIndex}
         swipeAnimation={swipeAnimation}
+        currentCard={currentCard}
+        previousCard={previousCard}
+        cardPointer={cardPointer}
+        setCardPointer={setCardPointer}
       />
     </View>
   );

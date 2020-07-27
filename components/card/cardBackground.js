@@ -62,7 +62,10 @@ const CardBackground = ({
       </Animated.View>
 
       <Animated.View
-        style={{ opacity: isTopCard ? likeOpacity : 0, position: 'absolute' }}
+        style={{
+          opacity: isTopCard ? likeOpacity : 0,
+          position: 'absolute',
+        }}
       >
         <Ionicons name="md-heart" size={100} color="purple" />
       </Animated.View>
