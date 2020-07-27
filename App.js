@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -7,15 +7,17 @@ import {
   Dimensions,
 } from 'react-native';
 
+//  components
 import ButtonPanel from './components/buttonPanel';
-
 import Card from './components/card/card';
+
+//  hooks
+import useSwipeAnimations from './hooks/useSwipeAnimations';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SWIPE_HORIZONTAL_THRESHOLD = SCREEN_WIDTH * 0.3;
 const SWIPE_VERTICAL_THRESHOLD = -SCREEN_HEIGHT * 0.3;
-const SWIPE_OUT_DURATION = 250;
 
 const imageOrigin = {
   x:
@@ -50,16 +52,18 @@ const DATA = [
 ];
 
 export default function App() {
-  const likeAnimValue = useRef(new Animated.Value(0)).current;
-  const dislikeAnimValue = useRef(new Animated.Value(0)).current;
-  const superlikeAnimValue = useRef(new Animated.Value(0)).current;
-
-  const currentCard = useRef(new Animated.ValueXY(imageOrigin)).current;
-  const previousCard = useRef(
-    new Animated.ValueXY({ x: -SCREEN_HEIGHT, y: -SCREEN_HEIGHT })
-  ).current;
-
-  const [cardPointer, setCardPointer] = useState(0);
+  const {
+    cardPointer,
+    setCardPointer,
+    likeAnimValue,
+    dislikeAnimValue,
+    superlikeAnimValue,
+    currentCard,
+    previousCard,
+    handleForceSwipe,
+    resetPosition,
+    swipeAnimation,
+  } = useSwipeAnimations();
 
   useEffect(() => {
     currentCard.setOffset(imageOrigin);
@@ -92,45 +96,6 @@ export default function App() {
       }
     },
   });
-
-  const swipeAnimation = (swipeDirection) =>
-    Animated.timing(currentCard, {
-      toValue: swipeDirection,
-      duration: SWIPE_OUT_DURATION,
-      useNativeDriver: false,
-    });
-
-  // When user moves card with touch
-  const handleForceSwipe = (direction) => {
-    let swipeDirection;
-
-    if (direction === 'top') {
-      swipeDirection = { x: 0, y: -SCREEN_HEIGHT * 2 };
-    } else {
-      swipeDirection =
-        direction === 'right'
-          ? {
-              x: SCREEN_HEIGHT,
-              y: -SCREEN_HEIGHT,
-            }
-          : {
-              x: -SCREEN_HEIGHT,
-              y: -SCREEN_HEIGHT,
-            };
-    }
-
-    swipeAnimation(swipeDirection).start(() => {
-      currentCard.setValue({ x: 0, y: 0 });
-      setCardPointer((prev) => prev + 1);
-    });
-  };
-
-  const resetPosition = () => {
-    Animated.spring(currentCard, {
-      toValue: { x: 0, y: 0 },
-      useNativeDriver: false,
-    }).start();
-  };
 
   return (
     <View style={styles.container}>
