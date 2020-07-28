@@ -3,6 +3,7 @@ import { Animated, Dimensions } from 'react-native';
 
 function useSwipeAnimations() {
   const SCREEN_HEIGHT = Dimensions.get('window').height;
+  const SCREEN_WIDTH = Dimensions.get('window').width;
   const SWIPE_OUT_DURATION = 250;
 
   const imageOrigin = {
@@ -27,6 +28,17 @@ function useSwipeAnimations() {
       duration: SWIPE_OUT_DURATION,
       useNativeDriver: false,
     });
+
+  const getCardStyle = (cardPosition) => {
+    const rotate = cardPosition.x.interpolate({
+      inputRange: [-SCREEN_WIDTH * 2, imageOrigin.x, SCREEN_WIDTH * 2],
+      outputRange: ['-120deg', '0deg', '120deg'],
+    });
+    return {
+      ...cardPosition.getLayout(),
+      transform: [{ rotate }],
+    };
+  };
 
   // When user moves card with touch
   const handleForceSwipe = (direction) => {
@@ -68,6 +80,7 @@ function useSwipeAnimations() {
     handleForceSwipe,
     resetPosition,
     swipeAnimation,
+    getCardStyle,
   };
 }
 

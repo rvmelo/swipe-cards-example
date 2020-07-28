@@ -1,23 +1,12 @@
 import React from 'react';
 import { View, Button, StyleSheet } from 'react-native';
 
-//  hooks
-// import usePressAnimations from '../hooks/usePressAnimations';
-
 const ButtonPanel = ({
   onRightSwipe,
   onLeftSwipe,
   onTopSwipe,
   onBackSwipe,
 }) => {
-  // const { handlePressSwipe, resetPosition } = usePressAnimations(
-  //   swipeAnimation,
-  //   currentCard,
-  //   previousCard,
-  //   cardPointer,
-  //   setCardPointer
-  // );
-
   return (
     <View style={styles.buttonContainer}>
       <Button title="swipe left" onPress={onLeftSwipe} />
