@@ -71,7 +71,11 @@ export default function App() {
     swipeAnimation,
   } = useSwipeAnimations();
 
-  const { handlePressSwipe, handleSwipeBack } = usePressAnimations(
+  const {
+    handlePressSwipe,
+    handleSwipeBack,
+    onResetAnimation,
+  } = usePressAnimations(
     swipeAnimation,
     iconFadeInAnimation,
     currentCard,
@@ -88,24 +92,28 @@ export default function App() {
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onPanResponderMove: (event, gesture) => {
-      return Animated.event(
-        [
-          null,
-          {
-            dx: currentCard.x, // x,y are Animated.Value
-            dy: currentCard.y,
-          },
-        ],
-        { useNativeDriver: false } // <-- Add this
-      )(event, gesture);
+      if (!onResetAnimation) {
+        return Animated.event(
+          [
+            null,
+            {
+              dx: currentCard.x, // x,y are Animated.Value
+              dy: currentCard.y,
+            },
+          ],
+          { useNativeDriver: false } // <-- Add this
+        )(event, gesture);
+      }
+
+      return null;
     },
     onPanResponderRelease: (event, gesture) => {
       if (gesture.dx < -SWIPE_HORIZONTAL_THRESHOLD) {
-        handleForceSwipe('left');
+        !onResetAnimation && handleForceSwipe('left');
       } else if (gesture.dx > SWIPE_HORIZONTAL_THRESHOLD) {
-        handleForceSwipe('right');
+        !onResetAnimation && handleForceSwipe('right');
       } else if (gesture.dy < SWIPE_VERTICAL_THRESHOLD) {
-        handleForceSwipe('top');
+        !onResetAnimation && handleForceSwipe('top');
       } else {
         resetPosition();
       }
@@ -132,6 +140,7 @@ export default function App() {
             }
             isTopCard={cardPointer === index}
             isPreviousCard={index === cardPointer - 1}
+            onResetAnimation={onResetAnimation}
           />
         );
       }).reverse()}

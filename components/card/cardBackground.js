@@ -12,6 +12,7 @@ const CardBackground = ({
   dislikeOpacity,
   superlikeOpacity,
   isTopCard,
+  handleOpacity,
 }) => {
   const {
     handleSwipeRigthOpacity,
@@ -25,7 +26,7 @@ const CardBackground = ({
 
       <Animated.View
         style={{
-          opacity: isTopCard ? handleSwipeRigthOpacity() : 0,
+          opacity: isTopCard && handleOpacity ? handleSwipeRigthOpacity() : 0,
           position: 'absolute',
         }}
       >
@@ -45,7 +46,7 @@ const CardBackground = ({
 
       <Animated.View
         style={{
-          opacity: isTopCard ? handleSwipeLeftOpacity() : 0,
+          opacity: isTopCard && handleOpacity ? handleSwipeLeftOpacity() : 0,
           position: 'absolute',
         }}
       >
@@ -65,7 +66,7 @@ const CardBackground = ({
 
       <Animated.View
         style={{
-          opacity: isTopCard ? handleSwipeTopOpacity() : 0,
+          opacity: isTopCard && handleOpacity ? handleSwipeTopOpacity() : 0,
           position: 'absolute',
         }}
       >

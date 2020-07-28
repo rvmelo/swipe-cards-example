@@ -17,15 +17,18 @@ const Card = ({
   superlikeOpacity,
   isTopCard,
   isPreviousCard,
+  onResetAnimation,
 }) => {
   const { getCardStyle } = useSwipeAnimations();
+
+  const freezeBottomCards = !isPreviousCard && onResetAnimation;
 
   return (
     <>
       <Animated.View
         {...panResponder.panHandlers}
         style={
-          isTopCard || isPreviousCard
+          (isTopCard || isPreviousCard) && !freezeBottomCards
             ? [{ ...cardStyle }, getCardStyle(cardPosition)]
             : [{ ...cardStyle }]
         }
@@ -37,6 +40,7 @@ const Card = ({
           cardPosition={cardPosition}
           data={data}
           isTopCard={isTopCard}
+          handleOpacity={!freezeBottomCards}
         />
       </Animated.View>
     </>

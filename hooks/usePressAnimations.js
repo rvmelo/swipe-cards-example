@@ -12,7 +12,7 @@ function usePressAnimations(
 ) {
   const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-  const [playResetAnimation, setPlayResetAnimation] = useState(false);
+  const [onResetAnimation, setOnResetAnimation] = useState(false);
 
   // When user moves card with the press of a button
   const handlePressSwipe = (direction, iconOpacity) => {
@@ -33,7 +33,7 @@ function usePressAnimations(
             };
     }
 
-    !playResetAnimation &&
+    !onResetAnimation &&
       Animated.sequence([
         iconFadeInAnimation(iconOpacity),
         Animated.delay(100),
@@ -50,9 +50,9 @@ function usePressAnimations(
 
   const handleSwipeBack = () => {
     if (cardPointer > 0) {
-      setPlayResetAnimation(true);
+      setOnResetAnimation(true);
 
-      !playResetAnimation &&
+      !onResetAnimation &&
         Animated.spring(previousCard, {
           toValue: { x: 0, y: 0 },
           duration: 250,
@@ -60,12 +60,12 @@ function usePressAnimations(
         }).start(() => {
           setCardPointer((prev) => prev - 1);
           previousCard.setValue({ x: -SCREEN_HEIGHT, y: -SCREEN_HEIGHT });
-          setPlayResetAnimation(false);
+          setOnResetAnimation(false);
         });
     }
   };
 
-  return { handlePressSwipe, handleSwipeBack };
+  return { handlePressSwipe, handleSwipeBack, onResetAnimation };
 }
 
 export default usePressAnimations;
