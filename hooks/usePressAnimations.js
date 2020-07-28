@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { Dimensions, Animated } from 'react-native';
+import { Animated } from 'react-native';
+
+//  constants
+import { SCREEN_HEIGHT } from '../constants/constants';
 
 //  Animations triggered by the press of a button
 function usePressAnimations(
@@ -10,8 +13,6 @@ function usePressAnimations(
   cardPointer,
   setCardPointer
 ) {
-  const SCREEN_HEIGHT = Dimensions.get('window').height;
-
   const [onPressSwipe, setOnPressSwipe] = useState(false);
   const [onResetAnimation, setOnResetAnimation] = useState(false);
 

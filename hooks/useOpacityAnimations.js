@@ -1,17 +1,14 @@
 import { useRef } from 'react';
-import { Animated, Dimensions } from 'react-native';
+import { Animated } from 'react-native';
+
+//  constants
+import { SCREEN_WIDTH, CARD_WIDTH, CARD_HEIGHT } from '../constants/constants';
+
+//  utils
+import { getCardOrigin } from '../utils/helperFunctions';
 
 function useOpacityAnimations(cardPosition) {
-  const SCREEN_WIDTH = Dimensions.get('window').width;
-
-  const imageOrigin = {
-    x:
-      Dimensions.get('window').width / 2 -
-      (Dimensions.get('window').width * 0.9) / 2,
-    y:
-      Dimensions.get('window').height / 2 -
-      (Dimensions.get('window').height * 0.6) / 2,
-  };
+  const cardOrigin = getCardOrigin(CARD_WIDTH, CARD_HEIGHT);
 
   const likeAnimValue = useRef(new Animated.Value(0)).current;
   const dislikeAnimValue = useRef(new Animated.Value(0)).current;
@@ -28,7 +25,7 @@ function useOpacityAnimations(cardPosition) {
 
   const handleSwipeRigthOpacity = () => {
     const swipeRightOpacity = cardPosition.x.interpolate({
-      inputRange: [imageOrigin.x, SCREEN_WIDTH],
+      inputRange: [cardOrigin.x, SCREEN_WIDTH],
       outputRange: [0, 1],
     });
 
@@ -37,7 +34,7 @@ function useOpacityAnimations(cardPosition) {
 
   const handleSwipeLeftOpacity = () => {
     const swipeLeftOpactiy = cardPosition.x.interpolate({
-      inputRange: [-SCREEN_WIDTH, imageOrigin.x],
+      inputRange: [-SCREEN_WIDTH, cardOrigin.x],
       outputRange: [1, 0],
     });
 
@@ -49,7 +46,7 @@ function useOpacityAnimations(cardPosition) {
       cardPosition.y,
       cardPosition.x
     ).interpolate({
-      inputRange: [-SCREEN_WIDTH / 2, imageOrigin.x],
+      inputRange: [-SCREEN_WIDTH / 2, cardOrigin.x],
       outputRange: [1, 0],
     });
 

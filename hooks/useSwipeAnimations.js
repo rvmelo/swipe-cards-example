@@ -1,23 +1,24 @@
 import { useRef, useState } from 'react';
-import { Animated, Dimensions } from 'react-native';
+import { Animated } from 'react-native';
+
+//  import constants
+import {
+  SCREEN_WIDTH,
+  SCREEN_HEIGHT,
+  SWIPE_OUT_DURATION,
+  CARD_WIDTH,
+  CARD_HEIGHT,
+} from '../constants/constants';
+
+// utils
+import { getCardOrigin } from '../utils/helperFunctions';
 
 function useSwipeAnimations() {
-  const SCREEN_HEIGHT = Dimensions.get('window').height;
-  const SCREEN_WIDTH = Dimensions.get('window').width;
-  const SWIPE_OUT_DURATION = 250;
-
-  const imageOrigin = {
-    x:
-      Dimensions.get('window').width / 2 -
-      (Dimensions.get('window').width * 0.9) / 2,
-    y:
-      Dimensions.get('window').height / 2 -
-      (Dimensions.get('window').height * 0.6) / 2,
-  };
+  const cardOrigin = getCardOrigin(CARD_WIDTH, CARD_HEIGHT);
 
   const [cardPointer, setCardPointer] = useState(0);
 
-  const currentCard = useRef(new Animated.ValueXY(imageOrigin)).current;
+  const currentCard = useRef(new Animated.ValueXY(cardOrigin)).current;
   const previousCard = useRef(
     new Animated.ValueXY({ x: -SCREEN_HEIGHT, y: -SCREEN_HEIGHT })
   ).current;
@@ -31,7 +32,7 @@ function useSwipeAnimations() {
 
   const getCardStyle = (cardPosition) => {
     const rotate = cardPosition.x.interpolate({
-      inputRange: [-SCREEN_WIDTH * 2, imageOrigin.x, SCREEN_WIDTH * 2],
+      inputRange: [-SCREEN_WIDTH * 2, cardOrigin.x, SCREEN_WIDTH * 2],
       outputRange: ['-120deg', '0deg', '120deg'],
     });
     return {

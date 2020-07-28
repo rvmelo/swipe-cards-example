@@ -1,11 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  Animated,
-  PanResponder,
-  Dimensions,
-} from 'react-native';
+import { StyleSheet, View, Animated, PanResponder } from 'react-native';
 
 //  components
 import ButtonPanel from './components/buttonPanel';
@@ -16,42 +10,19 @@ import useSwipeAnimations from './hooks/useSwipeAnimations';
 import usePressAnimations from './hooks/usePressAnimations';
 import useOpacityAnimations from './hooks/useOpacityAnimations';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const SCREEN_HEIGHT = Dimensions.get('window').height;
-const SWIPE_HORIZONTAL_THRESHOLD = SCREEN_WIDTH * 0.3;
-const SWIPE_VERTICAL_THRESHOLD = -SCREEN_HEIGHT * 0.3;
+//  constants
+import {
+  SWIPE_HORIZONTAL_THRESHOLD,
+  SWIPE_VERTICAL_THRESHOLD,
+  CARD_WIDTH,
+  CARD_HEIGHT,
+  DATA,
+} from './constants/constants';
 
-const imageOrigin = {
-  x:
-    Dimensions.get('window').width / 2 -
-    (Dimensions.get('window').width * 0.9) / 2,
-  y:
-    Dimensions.get('window').height / 2 -
-    (Dimensions.get('window').height * 0.6) / 2,
-};
+//  utils
+import { getCardOrigin } from './utils/helperFunctions';
 
-const DATA = [
-  {
-    id: 1,
-    text: 'Card #1',
-    uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-04.jpg',
-  },
-  {
-    id: 2,
-    text: 'Card #2',
-    uri: 'http://www.fluxdigital.co/wp-content/uploads/2015/04/Unsplash.jpg',
-  },
-  {
-    id: 3,
-    text: 'Card #3',
-    uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-09.jpg',
-  },
-  {
-    id: 4,
-    text: 'Card #4',
-    uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-01.jpg',
-  },
-];
+const cardOrigin = getCardOrigin(CARD_WIDTH, CARD_HEIGHT);
 
 export default function App() {
   const {
@@ -85,8 +56,8 @@ export default function App() {
   );
 
   useEffect(() => {
-    currentCard.setOffset(imageOrigin);
-    previousCard.setOffset(imageOrigin);
+    currentCard.setOffset(cardOrigin);
+    previousCard.setOffset(cardOrigin);
   }, []);
 
   const panResponder = PanResponder.create({
@@ -165,8 +136,8 @@ const styles = StyleSheet.create({
     height: '60%',
     width: '90%',
     position: 'absolute',
-    left: imageOrigin.x, // left and top place the non animated cards in the same place as the animated ones
-    top: imageOrigin.y,
+    left: cardOrigin.x, // left and top place the non animated cards in the same place as the animated ones
+    top: cardOrigin.y,
   },
   image: {
     height: '100%',
