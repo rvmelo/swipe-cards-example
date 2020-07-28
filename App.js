@@ -145,9 +145,15 @@ export default function App() {
         );
       }).reverse()}
       <ButtonPanel
-        onRightSwipe={() => handlePressSwipe('right', likeAnimValue)}
-        onLeftSwipe={() => handlePressSwipe('left', dislikeAnimValue)}
-        onTopSwipe={() => handlePressSwipe('top', superlikeAnimValue)}
+        onRightSwipe={() =>
+          handlePressSwipe('right', likeAnimValue, DATA.length)
+        }
+        onLeftSwipe={() =>
+          handlePressSwipe('left', dislikeAnimValue, DATA.length)
+        }
+        onTopSwipe={() =>
+          handlePressSwipe('top', superlikeAnimValue, DATA.length)
+        }
         onBackSwipe={handleSwipeBack}
       />
     </View>
