@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 import { StyleSheet, View, Animated, PanResponder } from 'react-native';
 
 //  components
@@ -24,7 +24,7 @@ import { getCardOrigin } from './utils/helperFunctions';
 
 const cardOrigin = getCardOrigin(CARD_WIDTH, CARD_HEIGHT);
 
-export default function App() {
+const App = () => {
   const {
     likeAnimValue,
     dislikeAnimValue,
@@ -58,7 +58,7 @@ export default function App() {
   useEffect(() => {
     currentCard.setOffset(cardOrigin);
     previousCard.setOffset(cardOrigin);
-  }, []);
+  }, [currentCard, previousCard]);
 
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -129,7 +129,7 @@ export default function App() {
       />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   cardContainer: {
@@ -152,3 +152,5 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
 });
+
+export default memo(App);

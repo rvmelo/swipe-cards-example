@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { Animated } from 'react-native';
 
 //  import constants
@@ -23,55 +23,64 @@ function useSwipeAnimations() {
     new Animated.ValueXY({ x: -SCREEN_HEIGHT, y: -SCREEN_HEIGHT })
   ).current;
 
-  const swipeAnimation = (swipeDirection) =>
-    Animated.timing(currentCard, {
-      toValue: swipeDirection,
-      duration: SWIPE_OUT_DURATION,
-      useNativeDriver: false,
-    });
+  const swipeAnimation = useCallback(
+    (swipeDirection) =>
+      Animated.timing(currentCard, {
+        toValue: swipeDirection,
+        duration: SWIPE_OUT_DURATION,
+        useNativeDriver: false,
+      }),
+    [currentCard]
+  );
 
-  const getCardStyle = (cardPosition) => {
-    const rotate = cardPosition.x.interpolate({
-      inputRange: [-SCREEN_WIDTH * 2, cardOrigin.x, SCREEN_WIDTH * 2],
-      outputRange: ['-120deg', '0deg', '120deg'],
-    });
-    return {
-      ...cardPosition.getLayout(),
-      transform: [{ rotate }],
-    };
-  };
+  const getCardStyle = useCallback(
+    (cardPosition) => {
+      const rotate = cardPosition.x.interpolate({
+        inputRange: [-SCREEN_WIDTH * 2, cardOrigin.x, SCREEN_WIDTH * 2],
+        outputRange: ['-120deg', '0deg', '120deg'],
+      });
+      return {
+        ...cardPosition.getLayout(),
+        transform: [{ rotate }],
+      };
+    },
+    [cardOrigin.x]
+  );
 
   // When user moves card with touch
-  const handleForceSwipe = (direction) => {
-    let swipeDirection;
+  const handleForceSwipe = useCallback(
+    (direction) => {
+      let swipeDirection;
 
-    if (direction === 'top') {
-      swipeDirection = { x: 0, y: -SCREEN_HEIGHT * 2 };
-    } else {
-      swipeDirection =
-        direction === 'right'
-          ? {
-              x: SCREEN_HEIGHT,
-              y: -SCREEN_HEIGHT,
-            }
-          : {
-              x: -SCREEN_HEIGHT,
-              y: -SCREEN_HEIGHT,
-            };
-    }
+      if (direction === 'top') {
+        swipeDirection = { x: 0, y: -SCREEN_HEIGHT * 2 };
+      } else {
+        swipeDirection =
+          direction === 'right'
+            ? {
+                x: SCREEN_HEIGHT,
+                y: -SCREEN_HEIGHT,
+              }
+            : {
+                x: -SCREEN_HEIGHT,
+                y: -SCREEN_HEIGHT,
+              };
+      }
 
-    swipeAnimation(swipeDirection).start(() => {
-      currentCard.setValue({ x: 0, y: 0 });
-      setCardPointer((prev) => prev + 1);
-    });
-  };
+      swipeAnimation(swipeDirection).start(() => {
+        currentCard.setValue({ x: 0, y: 0 });
+        setCardPointer((prev) => prev + 1);
+      });
+    },
+    [currentCard, swipeAnimation]
+  );
 
-  const resetPosition = () => {
+  const resetPosition = useCallback(() => {
     Animated.spring(currentCard, {
       toValue: { x: 0, y: 0 },
       useNativeDriver: false,
     }).start();
-  };
+  }, [currentCard]);
 
   return {
     cardPointer,

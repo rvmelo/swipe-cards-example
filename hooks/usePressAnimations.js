@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Animated } from 'react-native';
 
 //  constants
@@ -17,46 +17,57 @@ function usePressAnimations(
   const [onResetAnimation, setOnResetAnimation] = useState(false);
 
   // When user moves card with the press of a button
-  const handlePressSwipe = (direction, iconOpacity, numberOfCards) => {
-    let swipeDirection;
+  const handlePressSwipe = useCallback(
+    (direction, iconOpacity, numberOfCards) => {
+      let swipeDirection;
 
-    if (cardPointer > numberOfCards - 1 || onPressSwipe) return;
+      if (cardPointer > numberOfCards - 1 || onPressSwipe) return;
 
-    setOnPressSwipe(true);
+      setOnPressSwipe(true);
 
-    if (direction === 'top') {
-      swipeDirection = { x: 0, y: -SCREEN_HEIGHT * 2 };
-    } else {
-      swipeDirection =
-        direction === 'right'
-          ? {
-              x: SCREEN_HEIGHT,
-              y: -SCREEN_HEIGHT,
-            }
-          : {
-              x: -SCREEN_HEIGHT,
-              y: -SCREEN_HEIGHT,
-            };
-    }
+      if (direction === 'top') {
+        swipeDirection = { x: 0, y: -SCREEN_HEIGHT * 2 };
+      } else {
+        swipeDirection =
+          direction === 'right'
+            ? {
+                x: SCREEN_HEIGHT,
+                y: -SCREEN_HEIGHT,
+              }
+            : {
+                x: -SCREEN_HEIGHT,
+                y: -SCREEN_HEIGHT,
+              };
+      }
 
-    !onResetAnimation &&
-      Animated.sequence([
-        iconFadeInAnimation(iconOpacity),
-        Animated.delay(100),
-        swipeAnimation(swipeDirection),
-      ]).start(() => {
-        // after the animation finishes
+      !onResetAnimation &&
+        Animated.sequence([
+          iconFadeInAnimation(iconOpacity),
+          Animated.delay(100),
+          swipeAnimation(swipeDirection),
+        ]).start(() => {
+          // after the animation finishes
 
-        iconOpacity.setValue(0);
+          iconOpacity.setValue(0);
 
-        currentCard.setValue({ x: 0, y: 0 });
-        setCardPointer((prev) => prev + 1);
+          currentCard.setValue({ x: 0, y: 0 });
+          setCardPointer((prev) => prev + 1);
 
-        setOnPressSwipe(false);
-      });
-  };
+          setOnPressSwipe(false);
+        });
+    },
+    [
+      cardPointer,
+      currentCard,
+      setCardPointer,
+      iconFadeInAnimation,
+      onPressSwipe,
+      onResetAnimation,
+      swipeAnimation,
+    ]
+  );
 
-  const handleSwipeBack = () => {
+  const handleSwipeBack = useCallback(() => {
     if (cardPointer > 0) {
       setOnResetAnimation(true);
 
@@ -72,7 +83,7 @@ function usePressAnimations(
           setOnPressSwipe(false);
         });
     }
-  };
+  }, [cardPointer, setCardPointer, previousCard, onResetAnimation]);
 
   return { handlePressSwipe, handleSwipeBack, onResetAnimation };
 }

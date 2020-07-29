@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Button, StyleSheet } from 'react-native';
 
 const ButtonPanel = ({
@@ -29,4 +29,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ButtonPanel;
+export default memo(ButtonPanel);
